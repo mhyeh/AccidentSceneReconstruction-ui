@@ -1,0 +1,15 @@
+{
+    "parserOptions": {
+        "parser": "babel-eslint"
+    },
+    "rules": {
+        "strict": 0,
+        "indent": ["error", 4],
+        "semi": ["error", "always"],
+        "comma-dangle": "off",
+        "no-unused-vars": "off"
+    },
+    "extends": ["vue", "standard", "plugin:vue/recommended"],
+    "plugins": ["import", "vue"]
+    
+}
