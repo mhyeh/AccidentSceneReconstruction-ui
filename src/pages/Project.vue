@@ -1,7 +1,5 @@
 <template>
-    <video id='container' autoplay>
-        <source src='rtmp://140.118.127.145/model/test/' type='video/mp4'>
-    </video>
+    <canvas id='container'></canvas>
     <!-- <div>
     </div> -->
 </template>
@@ -13,11 +11,18 @@ export default {
     data () {
         return {
             socket: null,
-            isMouseDown: false
+            isMouseDown: false,
+            ctx: null,
+            image: new Image(1600, 900),
         };
     },
     beforeMount () {
         const self = this;
+        this.image.onload = () => {
+            if (this.ctx != null) {
+                this.ctx.drawImage(this.image, 0, 0);
+            }
+        };
         fetch(`http://140.118.127.145:3000/${self.$route.params.id}`).then(() => {
             console.log('run');
             self.socket = io.connect('http://140.118.127.145:3001', {
@@ -26,6 +31,9 @@ export default {
             self.socket.on('connected', () => {
                 self.socket.emit('init', window.innerWidth, window.innerHeight);
             });
+            self.socket.on('frame', frame => {
+                self.image.src = 'data:image/jpeg;base64,' + frame;
+            });
             document.addEventListener('mousedown', self.mouseDown);
             document.addEventListener('mouseup', self.mouseUp);
             document.addEventListener('mousemove', self.mouseMove);
@@ -33,6 +41,12 @@ export default {
         }).catch((e) => {
             console.log(e);
         });
+    },
+    mounted () {
+        const canvas = document.getElementById('container');
+        canvas.width = 1600;
+        canvas.height = 900;
+        this.ctx = canvas.getContext('2d');
     },
     destroyed () {
         this.socket.close();
@@ -50,26 +64,22 @@ export default {
         mouseDown (e) {
             this.isMouseDown = true;
             if (this.socket != null) {
-                console.log('mousedown');
                 this.socket.emit('mouseDown', e.button);
             }
         },
         mouseUp (e) {
             this.isMouseDown = false;
             if (this.socket != null) {
-                console.log('mouseup');
                 this.socket.emit('mouseUp', e.button);
             }
         },
         mouseMove (e) {
             if (this.socket != null) {
-                console.log('mousemove');
                 this.socket.emit('mouseMove', e.clientX, e.clientY);
             }
         },
         wheel (e) {
             if (this.socket != null) {
-                console.log('wheel');
                 this.socket.emit('wheel', e.deltaY);
             }
         }
