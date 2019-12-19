@@ -1,7 +1,5 @@
 <template>
     <canvas id='container'></canvas>
-    <!-- <div>
-    </div> -->
 </template>
 
 <script>
@@ -54,11 +52,6 @@ export default {
         document.removeEventListener('mouseup', this.mouseUp);
         document.removeEventListener('mousemove', this.mouseMove);
         document.removeEventListener('wheel', this.wheel);
-    },
-    computed: {
-        source () {
-            return `http://140.118.127.145/${self.$route.params.id}/`;
-        }
     },
     methods: {
         mouseDown (e) {
